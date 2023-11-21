@@ -1,4 +1,4 @@
-"""peopledatalabs data sourcing package."""
+"""Peopledatalabs data sourcing package."""
 
 import importlib.metadata
 
