@@ -33,6 +33,11 @@ class Location(BaseModel):
 
 
 class OrganizationModel(BaseModel):
+    """Base model for the organization entity.
+
+    To be extended with the premimum fields
+    """
+
     status: int
     name: str
     display_name: Optional[str]

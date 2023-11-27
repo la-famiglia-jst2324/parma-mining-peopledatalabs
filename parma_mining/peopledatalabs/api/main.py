@@ -26,5 +26,9 @@ def root():
 
 @app.get("/organization/{org_domain}", status_code=status.HTTP_200_OK)
 def get_organization_details(org_domain: str) -> OrganizationModel:
+    """Endpoint for the organization details according to the company domain.
+
+    Ex : "google.com"
+    """
     _pdlClient = PdlClient(api_key, base_url)
     return _pdlClient.get_organization_details(org_domain)
