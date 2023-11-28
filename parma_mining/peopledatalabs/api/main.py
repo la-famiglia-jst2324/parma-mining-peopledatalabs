@@ -26,7 +26,7 @@ def root():
 
 @app.get("/organization/{org_domain}", status_code=status.HTTP_200_OK)
 def get_organization_details(org_domain: str) -> OrganizationModel:
-    """Endpoint for the organization details according to the company domain.
+    """API Endpoint for the organization details according to the company domain.
 
     Ex : "google.com"
     """
