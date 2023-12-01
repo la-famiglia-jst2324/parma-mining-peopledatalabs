@@ -2,6 +2,7 @@ import httpx
 from httpx import Response
 from parma_mining.model import OrganizationModel
 from urllib.parse import urljoin
+from fastapi import HTTPException, status
 
 
 class PdlClient:
@@ -22,6 +23,12 @@ class PdlClient:
     def get_organization_details(self, org_domain: str) -> OrganizationModel:
         query = {"website": org_domain}
         path = "/company/enrich"
-        response = self.get(path, query).json()
-        parsed_organization = OrganizationModel.model_validate(response)
+
+        response = self.get(path, query)
+        if response.status_code == 404:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found"
+            )
+
+        parsed_organization = OrganizationModel.model_validate(response.json())
         return parsed_organization
