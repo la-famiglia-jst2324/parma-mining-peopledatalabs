@@ -12,7 +12,7 @@ dependencies:
   - setuptools >=61 # pyproject.toml support
   # Development
   - types-pyyaml
-  - requests
+  - httpx
   - python-dotenv >=1.0.0
   # Testing
   - pytest >=6 # --import-mode option

@@ -1,7 +1,6 @@
 """Main entrypoint for the API routes in of parma-analytics."""
 
-from fastapi import FastAPI
-from starlette import status
+from fastapi import FastAPI, status
 from dotenv import load_dotenv
 import os
 
@@ -18,7 +17,7 @@ app = FastAPI()
 
 
 # root endpoint
-@app.get("/", status_code=200)
+@app.get("/", status_code=status.HTTP_200_OK)
 def root():
     """Root endpoint for the API."""
     return {"welcome": "at parma-mining-peopledatalabs"}

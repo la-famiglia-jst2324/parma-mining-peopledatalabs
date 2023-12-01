@@ -1,6 +1,5 @@
-import requests
-from requests.models import Response
-
+import httpx
+from httpx import Response
 from parma_mining.model import OrganizationModel
 
 
@@ -15,13 +14,14 @@ class PdlClient:
             "content-type": "application/json",
             "x-api-key": self.api_key,
         }
-        return requests.request(
-            "GET", self.base_url + path, headers=headers, params=query
+        return httpx.request(
+            "GET", url=self.base_url + path, headers=headers, params=query
         )
 
     def get_organization_details(self, org_domain: str) -> OrganizationModel:
         query = {"website": org_domain}
         path = "/company/enrich"
         response = self.get(path, query).json()
+        print(response)
         parsed_organization = OrganizationModel.model_validate(response)
         return parsed_organization
