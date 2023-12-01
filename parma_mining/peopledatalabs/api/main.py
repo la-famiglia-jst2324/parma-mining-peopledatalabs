@@ -12,6 +12,7 @@ load_dotenv()
 
 base_url = str(os.getenv("PDL_BASE_URL") or "")
 api_key = str(os.getenv("PDL_API_KEY") or "")
+api_version = str(os.getenv("PDL_API_VERSION") or "")
 
 app = FastAPI()
 
@@ -29,5 +30,5 @@ def get_organization_details(org_domain: str) -> OrganizationModel:
 
     Ex : "google.com"
     """
-    _pdlClient = PdlClient(api_key, base_url)
+    _pdlClient = PdlClient(api_key, api_version, base_url)
     return _pdlClient.get_organization_details(org_domain)
