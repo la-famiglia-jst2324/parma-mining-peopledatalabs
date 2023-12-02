@@ -60,6 +60,7 @@ File (.env) should look like this :
 ```bash
 PDL_API_KEY = "PASTE/HERE"
 PDL_BASE_URL = "PASTE/HERE"
+PDL_API_VERSION = "PASTE/HERE"
 ```
 
 ## PR workflow
