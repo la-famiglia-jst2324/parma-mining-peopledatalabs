@@ -24,10 +24,17 @@ class PdlClient:
         query = {"website": org_domain}
         path = "/company/enrich"
 
-        response = self.get(path, query)
-        if response.status_code == 404:
+        try:
+            response = self.get(path, query)
+            response.raise_for_status()
+
+        except httpx.HTTPStatusError as exc:
+            if exc.response.status_code == 404:
+                error_detail = "Organization not found."
+            else:
+                error_detail = str(exc)
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found"
+                status_code=exc.response.status_code, detail=error_detail
             )
 
         parsed_organization = OrganizationModel.model_validate(response.json())
