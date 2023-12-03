@@ -39,6 +39,18 @@ resource "google_cloud_run_service" "parma_mining_peopledatalabs_cloud_run" {
           name  = "FIREBASE_ADMINSDK_CERTIFICATE"
           value = var.FIREBASE_ADMINSDK_CERTIFICATE
         }
+        env {
+          name  = "PDL_API_KEY"
+          value = var.PDL_API_KEY
+        }
+        env {
+          name  = "PDL_API_VERSION"
+          value = var.PDL_API_VERSION
+        }
+        env {
+          name  = "PDL_BASE_URL"
+          value = var.PDL_BASE_URL
+        }
       }
     }
   }
