@@ -33,5 +33,5 @@ module "main" {
   env              = "staging"
   project          = local.project
   region           = local.region
-  FIREBASE_ADMIN_SDK = var.FIREBASE_ADMIN_SDK
+  FIREBASE_ADMINSDK_CERTIFICATE = var.FIREBASE_ADMINSDK_CERTIFICATE
 }
