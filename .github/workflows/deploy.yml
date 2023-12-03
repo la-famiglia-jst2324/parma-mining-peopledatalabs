@@ -17,8 +17,8 @@ defaults:
 env:
   TF_VAR_FIREBASE_ADMINSDK_CERTIFICATE: ${{ github.event_name == 'release' && secrets.PROD_FIREBASE_ADMINSDK_CERTIFICATE || secrets.STAGING_FIREBASE_ADMINSDK_CERTIFICATE}}
   TF_VAR_PDL_API_KEY: ${{ secrets.PDL_API_KEY }}
-  TF_VAR_PDL_API_VERSION: ${{ env.PDL_API_VERSION }}
-  TF_VAR_PDL_BASE_URL: ${{ env.PDL_BASE_URL }}
+  TF_VAR_PDL_API_VERSION: ${{ vars.PDL_API_VERSION }}
+  TF_VAR_PDL_BASE_URL: ${{ vars.PDL_BASE_URL }}
 
 jobs:
   deploy:
