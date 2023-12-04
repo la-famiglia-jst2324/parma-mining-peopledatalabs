@@ -1,14 +1,10 @@
 import pytest
 from unittest.mock import MagicMock
-import os
+
 from fastapi.testclient import TestClient
 from parma_mining.peopledatalabs.api.main import app
 
 client = TestClient(app)
-
-os.environ["PDL_BASE_URL"] = ""
-os.environ["PDL_API_KEY"] = ""
-os.environ["PDL_API_VERSION"] = ""
 
 
 @pytest.fixture
