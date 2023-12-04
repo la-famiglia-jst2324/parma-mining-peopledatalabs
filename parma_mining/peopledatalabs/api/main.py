@@ -10,9 +10,9 @@ from parma_mining.model import OrganizationModel, CompaniesRequest
 
 load_dotenv()
 
-base_url = str(os.environ["PDL_BASE_URL"] or "")
-api_key = str(os.environ["PDL_API_KEY"] or "")
-api_version = str(os.environ["PDL_API_VERSION"] or "")
+base_url = str(os.getenv("PDL_BASE_URL") or "")
+api_key = str(os.getenv("PDL_API_KEY") or "")
+api_version = str(os.getenv("PDL_API_VERSION") or "")
 
 app = FastAPI()
 
