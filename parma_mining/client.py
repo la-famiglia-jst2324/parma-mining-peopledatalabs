@@ -33,6 +33,8 @@ class PdlClient:
         except httpx.HTTPStatusError as exc:
             if exc.response.status_code == 404:
                 error_detail = "Organization not found."
+            if exc.response.status_code == 400:
+                error_detail = "Type not found. Please use 'name' or 'website' as a type in the request body."
             else:
                 error_detail = str(exc)
             raise HTTPException(
