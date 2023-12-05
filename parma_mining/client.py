@@ -20,8 +20,10 @@ class PdlClient:
         full_path = urljoin(self.base_url, self.api_version + path)
         return httpx.request("GET", url=full_path, headers=headers, params=query)
 
-    def get_organization_details(self, org_domain: str) -> OrganizationModel:
-        query = {"website": org_domain}
+    def get_organization_details(
+        self, org_identifier: str, identifier_type: str
+    ) -> OrganizationModel:
+        query = {identifier_type: org_identifier}
         path = "/company/enrich"
 
         try:
@@ -31,6 +33,8 @@ class PdlClient:
         except httpx.HTTPStatusError as exc:
             if exc.response.status_code == 404:
                 error_detail = "Organization not found."
+            if exc.response.status_code == 400:
+                error_detail = "Type not found. Please use 'name' or 'website' as a type in the request body."
             else:
                 error_detail = str(exc)
             raise HTTPException(

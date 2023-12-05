@@ -1,10 +1,10 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Dict
 
 from pydantic import BaseModel
 
 
 class Naic(BaseModel):
-    naics_code: str
+    naics_code: Optional[str]
     sector: Optional[str]
     sub_sector: Optional[str]
     industry_group: Optional[str]
@@ -13,7 +13,7 @@ class Naic(BaseModel):
 
 
 class SicItem(BaseModel):
-    sic_code: str
+    sic_code: Optional[str]
     major_group: Optional[str]
     industry_group: Optional[str]
     industry_sector: Optional[str]
@@ -65,4 +65,9 @@ class OrganizationModel(BaseModel):
     alternative_names: Optional[List[str]]
     alternative_domains: Optional[List[str]]
     affiliated_profiles: Optional[List[str]]
-    likelihood: int
+    likelihood: Optional[int]
+
+
+class CompaniesRequest(BaseModel):
+    companies: Dict[str, List[str]]
+    type: str
