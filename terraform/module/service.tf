@@ -51,6 +51,10 @@ resource "google_cloud_run_service" "parma_mining_peopledatalabs_cloud_run" {
           name  = "PDL_BASE_URL"
           value = var.PDL_BASE_URL
         }
+        env {
+          name  = "ANALYTICS_BASE_URL"
+          value = var.ANALYTICS_BASE_URL
+        }
       }
     }
   }
