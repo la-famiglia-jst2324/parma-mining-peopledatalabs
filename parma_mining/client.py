@@ -1,8 +1,11 @@
-import httpx
-from httpx import Response
-from parma_mining.model import OrganizationModel
 from urllib.parse import urljoin
-from fastapi import HTTPException, status
+
+import httpx
+from fastapi import HTTPException
+from httpx import Response
+
+from parma_mining.mining_common.const import HTTP_400, HTTP_404
+from parma_mining.model import OrganizationModel
 
 
 class PdlClient:
@@ -31,10 +34,14 @@ class PdlClient:
             response.raise_for_status()
 
         except httpx.HTTPStatusError as exc:
-            if exc.response.status_code == 404:
+            if exc.response.status_code == HTTP_404:
                 error_detail = "Organization not found."
-            if exc.response.status_code == 400:
-                error_detail = "Type not found. Please use 'name' or 'website' as a type in the request body."
+            if exc.response.status_code == HTTP_400:
+                error_detail = (
+                    "Type not found. "
+                    "Please use 'name' or 'website'"
+                    "as a type in the request body."
+                )
             else:
                 error_detail = str(exc)
             raise HTTPException(

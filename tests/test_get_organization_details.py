@@ -1,7 +1,9 @@
-import pytest
 from unittest.mock import MagicMock
 
+import pytest
 from fastapi.testclient import TestClient
+
+from parma_mining.mining_common.const import HTTP_200
 from parma_mining.peopledatalabs.api.main import app
 
 client = TestClient(app)
@@ -63,7 +65,7 @@ def test_get_organization_details(mock_pdl_client: MagicMock):
     }
     response = client.post("/organizations", json=payload)
     print(response.json())
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200
     assert response.json() == [
         {
             "status": 200,
