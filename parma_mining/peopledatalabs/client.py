@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from httpx import Response
 
 from parma_mining.mining_common.const import HTTP_400, HTTP_404
-from parma_mining.model import OrganizationModel
+from parma_mining.peopledatalabs.model import OrganizationModel
 
 
 class PdlClient:

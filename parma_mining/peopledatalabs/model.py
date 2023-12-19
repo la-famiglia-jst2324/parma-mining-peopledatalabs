@@ -69,5 +69,10 @@ class OrganizationModel(BaseModel):
 
 
 class CompaniesRequest(BaseModel):
-    companies: dict[str, list[str]]
-    type: str
+    companies: dict[str, dict[str, list[str]]]
+
+
+class ResponseModel(BaseModel):
+    source_name: str
+    company_id: str
+    raw_data: OrganizationModel

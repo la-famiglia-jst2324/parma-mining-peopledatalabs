@@ -5,8 +5,12 @@ import os
 from dotenv import load_dotenv
 from fastapi import FastAPI, status
 
-from parma_mining.client import PdlClient
-from parma_mining.model import CompaniesRequest, OrganizationModel
+from parma_mining.peopledatalabs.analytics_client import AnalyticsClient
+from parma_mining.peopledatalabs.client import PdlClient
+from parma_mining.peopledatalabs.model import (
+    CompaniesRequest,
+    ResponseModel,
+)
 
 load_dotenv()
 
@@ -15,6 +19,8 @@ api_key = str(os.getenv("PDL_API_KEY") or "")
 api_version = str(os.getenv("PDL_API_VERSION") or "")
 
 app = FastAPI()
+
+analytics_client = AnalyticsClient()
 
 
 # root endpoint
@@ -25,22 +31,27 @@ def root():
 
 
 @app.post(
-    "/organizations",
+    "/companies",
     status_code=status.HTTP_200_OK,
-    response_model=list[OrganizationModel],
 )
-def get_organization_details(companies: CompaniesRequest) -> list[OrganizationModel]:
+def get_organization_details(companies: CompaniesRequest):
     """API Endpoint for the organization details according to the company domains.
 
     Possible types : "name" and "website"
     """
-    _pdl_client = PdlClient(api_key, api_version, base_url)
-    all_org_details = []
-    for company_name, company_identifiers in companies.companies.items():
-        for company_identifier in company_identifiers:
-            org_details = _pdl_client.get_organization_details(
-                company_identifier, companies.type
-            )
-            all_org_details.append(org_details)
+    pdl_client = PdlClient(api_key, api_version, base_url)
+    for company_id, company_data in companies.companies.items():
+        for data_type, handles in company_data.items():
+            for handle in handles:
+                org_details = pdl_client.get_organization_details(handle, data_type)
+                data = ResponseModel(
+                    source_name="peopledatalabs",
+                    company_id=company_id,
+                    raw_data=org_details,
+                )
+                try:
+                    analytics_client.feed_raw_data(data)
+                except Exception:
+                    raise Exception("Can't send crawling data to the Analytics.")
 
-    return all_org_details
+    return "done"
