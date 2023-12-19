@@ -1,5 +1,6 @@
 """Main entrypoint for the API routes in of parma-analytics."""
 
+import json
 import os
 
 from dotenv import load_dotenv
@@ -11,6 +12,7 @@ from parma_mining.peopledatalabs.model import (
     CompaniesRequest,
     ResponseModel,
 )
+from parma_mining.peopledatalabs.normalization_map import PdlNormalizationMap
 
 load_dotenv()
 
@@ -21,6 +23,7 @@ api_version = str(os.getenv("PDL_API_VERSION") or "")
 app = FastAPI()
 
 analytics_client = AnalyticsClient()
+normalization = PdlNormalizationMap()
 
 
 # root endpoint
@@ -28,6 +31,24 @@ analytics_client = AnalyticsClient()
 def root():
     """Root endpoint for the API."""
     return {"welcome": "at parma-mining-peopledatalabs"}
+
+
+@app.get("/initialize", status_code=status.HTTP_200_OK)
+def initialize(source_id: int) -> str:
+    """Initialization endpoint for the API."""
+    # init frequency
+    time = "monthly"
+    normalization_map = normalization.get_normalization_map()
+    # register the measurement to analytics
+    analytics_client.register_measurements(
+        normalization_map, source_module_id=source_id
+    )
+
+    # set and return results
+    results = {}
+    results["frequency"] = time
+    results["normalization_map"] = str(normalization_map)
+    return json.dumps(results)
 
 
 @app.post(
@@ -54,4 +75,4 @@ def get_organization_details(companies: CompaniesRequest):
                 except Exception:
                     raise Exception("Can't send crawling data to the Analytics.")
 
-    return "done"
+    return org_details
