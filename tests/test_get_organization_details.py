@@ -58,7 +58,19 @@ def mock_pdl_client(mocker) -> MagicMock:
     return mock
 
 
-def test_get_organization_details(mock_pdl_client: MagicMock):
+@pytest.fixture
+def mock_analytics_client(mocker) -> MagicMock:
+    """Mocking the AnalyticClient's method to avoid actual API calls during testing."""
+    mock = mocker.patch(
+        "parma_mining.peopledatalabs.api.main.AnalyticsClient.feed_raw_data"
+    )
+    # No return value needed, but you can add side effects or exceptions if necessary
+    return mock
+
+
+def test_get_organization_details(
+    mock_pdl_client: MagicMock, mock_analytics_client: MagicMock
+):
     payload = {"companies": {"example_id": {"name": ["google"]}}}
     response = client.post("/companies", json=payload)
     print(response.json())
