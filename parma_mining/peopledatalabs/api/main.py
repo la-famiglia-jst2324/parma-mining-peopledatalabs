@@ -75,4 +75,4 @@ def get_organization_details(companies: CompaniesRequest):
                 except Exception:
                     raise Exception("Can't send crawling data to the Analytics.")
 
-    return "done"
+    return org_details
