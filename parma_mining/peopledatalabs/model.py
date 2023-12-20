@@ -76,3 +76,8 @@ class ResponseModel(BaseModel):
     source_name: str
     company_id: str
     raw_data: OrganizationModel
+
+
+class DiscoveryModel(BaseModel):
+    name: str | None
+    url: str | None

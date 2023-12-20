@@ -10,6 +10,7 @@ from parma_mining.peopledatalabs.analytics_client import AnalyticsClient
 from parma_mining.peopledatalabs.client import PdlClient
 from parma_mining.peopledatalabs.model import (
     CompaniesRequest,
+    DiscoveryModel,
     ResponseModel,
 )
 from parma_mining.peopledatalabs.normalization_map import PdlNormalizationMap
@@ -76,3 +77,16 @@ def get_organization_details(companies: CompaniesRequest):
                     raise Exception("Can't send crawling data to the Analytics.")
 
     return org_details
+
+
+@app.get(
+    "/discover",
+    response_model=list[DiscoveryModel],
+    status_code=status.HTTP_200_OK,
+)
+def search_organizations(query: str) -> list[DiscoveryModel]:
+    """Discovery endpoint for the API."""
+    # Return same name only to agree with the common interface among data sources
+    # There is no discover for PDL
+    result = [DiscoveryModel.model_validate({"name": query, "url": ""})]
+    return result
