@@ -1,3 +1,4 @@
+"""Client for the PDL API."""
 from urllib.parse import urljoin
 
 import httpx
@@ -9,12 +10,16 @@ from parma_mining.model import OrganizationModel
 
 
 class PdlClient:
+    """Client for PDL API."""
+
     def __init__(self, api_key: str, api_version: str, base_url: str):
+        """Initialize the PdlClient."""
         self.api_key = api_key
         self.base_url = base_url
         self.api_version = api_version
 
     def get(self, path: str, query: dict[str, str]) -> Response:
+        """Make a GET request to the PDL API."""
         headers = {
             "accept": "application/json",
             "content-type": "application/json",
@@ -26,6 +31,7 @@ class PdlClient:
     def get_organization_details(
         self, org_identifier: str, identifier_type: str
     ) -> OrganizationModel:
+        """Fetch organization details from PDL."""
         query = {identifier_type: org_identifier}
         path = "/company/enrich"
 

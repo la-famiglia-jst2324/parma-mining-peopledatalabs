@@ -1,9 +1,12 @@
+"""Pydantic models for the Parma Mining API."""
 from typing import Any
 
 from pydantic import BaseModel
 
 
 class Naic(BaseModel):
+    """Pydantic model for the NAIC entity."""
+
     naics_code: str | None
     sector: str | None
     sub_sector: str | None
@@ -13,6 +16,8 @@ class Naic(BaseModel):
 
 
 class SicItem(BaseModel):
+    """Pydantic model for the SIC entity."""
+
     sic_code: str | None
     major_group: str | None
     industry_group: str | None
@@ -20,6 +25,8 @@ class SicItem(BaseModel):
 
 
 class Location(BaseModel):
+    """Pydantic model for the location entity."""
+
     name: str | None
     locality: str | None
     region: str | None
@@ -69,5 +76,7 @@ class OrganizationModel(BaseModel):
 
 
 class CompaniesRequest(BaseModel):
+    """Base model for the companies request."""
+
     companies: dict[str, list[str]]
     type: str

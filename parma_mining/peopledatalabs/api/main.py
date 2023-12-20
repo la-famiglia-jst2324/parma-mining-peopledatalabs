@@ -17,7 +17,6 @@ api_version = str(os.getenv("PDL_API_VERSION") or "")
 app = FastAPI()
 
 
-# root endpoint
 @app.get("/", status_code=status.HTTP_200_OK)
 def root():
     """Root endpoint for the API."""
