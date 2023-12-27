@@ -1,4 +1,5 @@
 """Client for the PDL API."""
+import logging
 from urllib.parse import urljoin
 
 import httpx
@@ -7,6 +8,8 @@ from httpx import Response
 
 from parma_mining.mining_common.const import HTTP_400, HTTP_404
 from parma_mining.model import OrganizationModel
+
+logger = logging.getLogger(__name__)
 
 
 class PdlClient:
@@ -40,6 +43,11 @@ class PdlClient:
             response.raise_for_status()
 
         except httpx.HTTPStatusError as exc:
+            logger.error(
+                f"API request failed with "
+                f"status code {exc.response.status_code} and response: {str(exc)}"
+            )
+
             if exc.response.status_code == HTTP_404:
                 error_detail = "Organization not found."
             if exc.response.status_code == HTTP_400:

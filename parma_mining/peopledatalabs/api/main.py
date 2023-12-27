@@ -1,5 +1,5 @@
 """Main entrypoint for the API routes in of parma-analytics."""
-
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -7,6 +7,10 @@ from fastapi import FastAPI, status
 
 from parma_mining.client import PdlClient
 from parma_mining.model import CompaniesRequest, OrganizationModel
+
+logging.basicConfig(level=logging.INFO)
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -20,6 +24,7 @@ app = FastAPI()
 @app.get("/", status_code=status.HTTP_200_OK)
 def root():
     """Root endpoint for the API."""
+    logger.debug("Root endpoint called")
     return {"welcome": "at parma-mining-peopledatalabs"}
 
 
