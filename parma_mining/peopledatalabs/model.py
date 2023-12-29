@@ -80,4 +80,4 @@ class ResponseModel(BaseModel):
 
 class DiscoveryModel(BaseModel):
     name: str | None
-    url: str | None
+    handle: str | None

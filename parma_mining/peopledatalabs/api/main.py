@@ -88,5 +88,5 @@ def search_organizations(query: str) -> list[DiscoveryModel]:
     """Discovery endpoint for the API."""
     # Return same name only to agree with the common interface among data sources
     # There is no discover for PDL
-    result = [DiscoveryModel.model_validate({"name": query, "url": ""})]
+    result = [DiscoveryModel.model_validate({"name": query, "handle": query})]
     return result
