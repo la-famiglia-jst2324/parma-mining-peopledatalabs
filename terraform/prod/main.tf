@@ -33,7 +33,6 @@ module "main" {
   env                           = "prod"
   project                       = local.project
   region                        = local.region
-  FIREBASE_ADMINSDK_CERTIFICATE = var.FIREBASE_ADMINSDK_CERTIFICATE
   PDL_API_KEY                   = var.PDL_API_KEY
   PDL_API_VERSION               = var.PDL_API_VERSION
   PDL_BASE_URL                  = var.PDL_BASE_URL
