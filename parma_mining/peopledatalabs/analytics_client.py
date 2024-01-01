@@ -1,3 +1,4 @@
+"""Client for Analytics module."""
 import json
 import os
 import urllib.parse
@@ -9,6 +10,8 @@ from parma_mining.peopledatalabs.model import ResponseModel
 
 
 class AnalyticsClient:
+    """Class for the Analytics Client."""
+
     load_dotenv()
 
     analytics_base = str(os.getenv("ANALYTICS_BASE_URL") or "")
@@ -17,6 +20,7 @@ class AnalyticsClient:
     feed_raw_url = urllib.parse.urljoin(analytics_base, "/feed-raw-data")
 
     def send_post_request(self, api_endpoint, data):
+        """POST method for the Analytics API's."""
         headers = {
             "Content-Type": "application/json",
         }
@@ -32,6 +36,7 @@ class AnalyticsClient:
             )
 
     def register_measurements(self, mapping, parent_id=None, source_module_id=None):
+        """Method for registering the measurements."""
         result = []
 
         for field_mapping in mapping["Mappings"]:
@@ -63,6 +68,7 @@ class AnalyticsClient:
         return result, mapping
 
     def feed_raw_data(self, input_data: ResponseModel):
+        """Methods for sending the raw data to the analytics."""
         organization_json = json.loads(input_data.raw_data.model_dump_json())
 
         data = {

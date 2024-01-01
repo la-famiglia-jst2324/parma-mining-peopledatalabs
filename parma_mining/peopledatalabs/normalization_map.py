@@ -1,4 +1,9 @@
+"""Pre-defined normalization map for the module."""
+
+
 class PdlNormalizationMap:
+    """Class for the PDL Normalization Map."""
+
     map_json = {
         "Source": "peopledatalabs",
         "Mappings": [
@@ -237,4 +242,5 @@ class PdlNormalizationMap:
     }
 
     def get_normalization_map(self):
+        """Getter for the normalization map."""
         return self.map_json
