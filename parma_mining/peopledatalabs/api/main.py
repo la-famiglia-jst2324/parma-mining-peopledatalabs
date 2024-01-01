@@ -27,7 +27,6 @@ analytics_client = AnalyticsClient()
 normalization = PdlNormalizationMap()
 
 
-# root endpoint
 @app.get("/", status_code=status.HTTP_200_OK)
 def root():
     """Root endpoint for the API."""
