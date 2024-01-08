@@ -3,10 +3,11 @@ import logging
 import os
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, status
+from fastapi import Depends, FastAPI, status
 
-from parma_mining.client import PdlClient
-from parma_mining.model import CompaniesRequest, OrganizationModel
+from parma_mining.peopledatalabs.api.dependencies.auth import authenticate
+from parma_mining.peopledatalabs.client import PdlClient
+from parma_mining.peopledatalabs.model import CompaniesRequest, OrganizationModel
 
 logging.basicConfig(level=logging.INFO)
 
@@ -33,7 +34,9 @@ def root():
     status_code=status.HTTP_200_OK,
     response_model=list[OrganizationModel],
 )
-def get_organization_details(companies: CompaniesRequest) -> list[OrganizationModel]:
+def get_organization_details(
+    companies: CompaniesRequest, token=Depends(authenticate)
+) -> list[OrganizationModel]:
     """API Endpoint for the organization details according to the company domains.
 
     Possible types : "name" and "website"
