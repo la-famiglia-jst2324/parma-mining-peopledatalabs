@@ -6,8 +6,8 @@ from fastapi.testclient import TestClient
 
 from parma_mining.mining_common.const import HTTP_200
 from parma_mining.peopledatalabs.api.dependencies.auth import authenticate
-from parma_mining.peopledatalabs.api.dependencies.mock_auth import mock_authenticate
 from parma_mining.peopledatalabs.api.main import app
+from tests.dependencies.mock_auth import mock_authenticate
 
 
 @pytest.fixture
