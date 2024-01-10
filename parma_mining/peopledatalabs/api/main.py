@@ -1,6 +1,7 @@
 """Main entrypoint for the API routes in of parma-analytics."""
 
 import json
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -14,6 +15,18 @@ from parma_mining.peopledatalabs.model import (
     ResponseModel,
 )
 from parma_mining.peopledatalabs.normalization_map import PdlNormalizationMap
+
+env = os.getenv("env", "local")
+
+if env == "prod":
+    logging.basicConfig(level=logging.INFO)
+elif env in ["staging", "local"]:
+    logging.basicConfig(level=logging.DEBUG)
+else:
+    logging.warning(f"Unknown environment '{env}'. Defaulting to INFO level.")
+    logging.basicConfig(level=logging.INFO)
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -30,6 +43,7 @@ normalization = PdlNormalizationMap()
 @app.get("/", status_code=status.HTTP_200_OK)
 def root():
     """Root endpoint for the API."""
+    logger.debug("Root endpoint called")
     return {"welcome": "at parma-mining-peopledatalabs"}
 
 
