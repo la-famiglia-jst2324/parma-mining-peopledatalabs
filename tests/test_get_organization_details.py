@@ -58,95 +58,61 @@ def mock_pdl_client(mocker) -> MagicMock:
     return mock
 
 
-def test_get_organization_details(mock_pdl_client: MagicMock):
-    payload = {
-        "companies": {"google": ["google"], "facebook": ["facebook"]},
-        "type": "name",
-    }
-    response = client.post("/organizations", json=payload)
+@pytest.fixture
+def mock_analytics_client(mocker) -> MagicMock:
+    """Mocking the AnalyticClient's method to avoid actual API calls during testing."""
+    mock = mocker.patch(
+        "parma_mining.peopledatalabs.api.main.AnalyticsClient.feed_raw_data"
+    )
+    # No return value needed, but you can add side effects or exceptions if necessary
+    return mock
+
+
+def test_get_organization_details(
+    mock_pdl_client: MagicMock, mock_analytics_client: MagicMock
+):
+    payload = {"companies": {"example_id": {"name": ["google"]}}}
+    response = client.post("/companies", json=payload)
     print(response.json())
     assert response.status_code == HTTP_200
-    assert response.json() == [
-        {
-            "status": 200,
+    assert response.json() == {
+        "status": 200,
+        "name": "test",
+        "display_name": "test",
+        "size": "test",
+        "employee_count": 1,
+        "id": "test",
+        "founded": 1,
+        "industry": "test",
+        "naics": None,
+        "sic": None,
+        "location": {
             "name": "test",
-            "display_name": "test",
-            "size": "test",
-            "employee_count": 1,
-            "id": "test",
-            "founded": 1,
-            "industry": "test",
-            "naics": None,
-            "sic": None,
-            "location": {
-                "name": "test",
-                "locality": "test",
-                "region": "test",
-                "metro": "test",
-                "country": "test",
-                "continent": "test",
-                "street_address": "test",
-                "address_line_2": "test",
-                "postal_code": "test",
-                "geo": "test",
-            },
-            "linkedin_id": "test",
-            "linkedin_url": "test",
-            "facebook_url": "test",
-            "twitter_url": "test",
-            "profiles": [],
-            "website": "test",
-            "ticker": "test",
-            "gics_sector": "test",
-            "mic_exchange": "test",
-            "type": "test",
-            "summary": "test",
-            "tags": [],
-            "headline": "test",
-            "alternative_names": [],
-            "alternative_domains": [],
-            "affiliated_profiles": [],
-            "likelihood": 5,
+            "locality": "test",
+            "region": "test",
+            "metro": "test",
+            "country": "test",
+            "continent": "test",
+            "street_address": "test",
+            "address_line_2": "test",
+            "postal_code": "test",
+            "geo": "test",
         },
-        {
-            "status": 200,
-            "name": "test",
-            "display_name": "test",
-            "size": "test",
-            "employee_count": 1,
-            "id": "test",
-            "founded": 1,
-            "industry": "test",
-            "naics": None,
-            "sic": None,
-            "location": {
-                "name": "test",
-                "locality": "test",
-                "region": "test",
-                "metro": "test",
-                "country": "test",
-                "continent": "test",
-                "street_address": "test",
-                "address_line_2": "test",
-                "postal_code": "test",
-                "geo": "test",
-            },
-            "linkedin_id": "test",
-            "linkedin_url": "test",
-            "facebook_url": "test",
-            "twitter_url": "test",
-            "profiles": [],
-            "website": "test",
-            "ticker": "test",
-            "gics_sector": "test",
-            "mic_exchange": "test",
-            "type": "test",
-            "summary": "test",
-            "tags": [],
-            "headline": "test",
-            "alternative_names": [],
-            "alternative_domains": [],
-            "affiliated_profiles": [],
-            "likelihood": 5,
-        },
-    ]
+        "linkedin_id": "test",
+        "linkedin_url": "test",
+        "facebook_url": "test",
+        "twitter_url": "test",
+        "profiles": [],
+        "website": "test",
+        "ticker": "test",
+        "gics_sector": "test",
+        "mic_exchange": "test",
+        "type": "test",
+        "summary": "test",
+        "tags": [],
+        "headline": "test",
+        "alternative_names": [],
+        "alternative_domains": [],
+        "affiliated_profiles": [],
+        "likelihood": 5,
+    }

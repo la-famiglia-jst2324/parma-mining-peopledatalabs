@@ -78,5 +78,19 @@ class OrganizationModel(BaseModel):
 class CompaniesRequest(BaseModel):
     """Base model for the companies request."""
 
-    companies: dict[str, list[str]]
-    type: str
+    companies: dict[str, dict[str, list[str]]]
+
+
+class ResponseModel(BaseModel):
+    """Base model for the response model."""
+
+    source_name: str
+    company_id: str
+    raw_data: OrganizationModel
+
+
+class DiscoveryModel(BaseModel):
+    """Base model for the discovery model."""
+
+    name: str | None
+    handle: str | None
