@@ -37,4 +37,6 @@ module "main" {
   PDL_API_VERSION               = var.PDL_API_VERSION
   PDL_BASE_URL                  = var.PDL_BASE_URL
   ANALYTICS_BASE_URL            = var.ANALYTICS_BASE_URL
+
+  PARMA_SHARED_SECRET_KEY = var.PARMA_SHARED_SECRET_KEY
 }

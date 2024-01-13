@@ -1,12 +1,27 @@
+import logging
 from unittest.mock import MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
 
 from parma_mining.mining_common.const import HTTP_200
+from parma_mining.peopledatalabs.api.dependencies.auth import authenticate
 from parma_mining.peopledatalabs.api.main import app
+from tests.dependencies.mock_auth import mock_authenticate
 
-client = TestClient(app)
+
+@pytest.fixture
+def client():
+    assert app
+    app.dependency_overrides.update(
+        {
+            authenticate: mock_authenticate,
+        }
+    )
+    return TestClient(app)
+
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture
@@ -69,7 +84,7 @@ def mock_analytics_client(mocker) -> MagicMock:
 
 
 def test_get_organization_details(
-    mock_pdl_client: MagicMock, mock_analytics_client: MagicMock
+    client: TestClient, mock_pdl_client: MagicMock, mock_analytics_client: MagicMock
 ):
     payload = {"companies": {"example_id": {"name": ["google"]}}}
     response = client.post("/companies", json=payload)
