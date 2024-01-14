@@ -53,14 +53,14 @@ def root():
 
 
 @app.get("/initialize", status_code=status.HTTP_200_OK)
-def initialize(source_id: int) -> str:
+def initialize(source_id: int, token=Depends(authenticate)) -> str:
     """Initialization endpoint for the API."""
     # init frequency
     time = "monthly"
     normalization_map = normalization.get_normalization_map()
     # register the measurement to analytics
     analytics_client.register_measurements(
-        normalization_map, source_module_id=source_id
+        token, normalization_map, source_module_id=source_id
     )
 
     # set and return results
@@ -99,7 +99,7 @@ def get_organization_details(body: CompaniesRequest, token=Depends(authenticate)
                     raw_data=org_details,
                 )
                 try:
-                    analytics_client.feed_raw_data(data)
+                    analytics_client.feed_raw_data(token, data)
                 except AnalyticsError as e:
                     logger.error(
                         f"Can't send crawling data to the Analytics. Error: {e}"
@@ -107,11 +107,12 @@ def get_organization_details(body: CompaniesRequest, token=Depends(authenticate)
                     collect_errors(company_id, errors, e)
 
     return analytics_client.crawling_finished(
+        token,
         json.loads(
             CrawlingFinishedInputModel(
                 task_id=body.task_id, errors=errors
             ).model_dump_json()
-        )
+        ),
     )
 
 
