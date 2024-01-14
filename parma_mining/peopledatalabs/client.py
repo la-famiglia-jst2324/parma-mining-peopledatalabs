@@ -3,10 +3,10 @@ import logging
 from urllib.parse import urljoin
 
 import httpx
-from fastapi import HTTPException
 from httpx import Response
 
 from parma_mining.mining_common.const import HTTP_400, HTTP_404
+from parma_mining.mining_common.exceptions import CrawlingError
 from parma_mining.peopledatalabs.model import OrganizationModel
 
 logger = logging.getLogger(__name__)
@@ -42,25 +42,23 @@ class PdlClient:
             response = self.get(path, query)
             response.raise_for_status()
 
-        except httpx.HTTPStatusError as exc:
+        except httpx.HTTPStatusError as e:
             logger.error(
                 f"API request failed with "
-                f"status code {exc.response.status_code} and response: {str(exc)}"
+                f"status code {e.response.status_code} and response: {str(e)}"
             )
 
-            if exc.response.status_code == HTTP_404:
+            if e.response.status_code == HTTP_404:
                 error_detail = "Organization not found."
-            if exc.response.status_code == HTTP_400:
+            if e.response.status_code == HTTP_400:
                 error_detail = (
                     "Type not found. "
                     "Please use 'name' or 'website'"
                     "as a type in the request body."
                 )
             else:
-                error_detail = str(exc)
-            raise HTTPException(
-                status_code=exc.response.status_code, detail=error_detail
-            )
+                error_detail = str(e)
+            raise CrawlingError(error_detail)
 
         parsed_organization = OrganizationModel.model_validate(response.json())
         return parsed_organization

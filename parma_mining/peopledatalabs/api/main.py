@@ -7,12 +7,16 @@ import os
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, status
 
+from parma_mining.mining_common.exceptions import AnalyticsError, CrawlingError
 from parma_mining.peopledatalabs.analytics_client import AnalyticsClient
 from parma_mining.peopledatalabs.api.dependencies.auth import authenticate
 from parma_mining.peopledatalabs.client import PdlClient
+from parma_mining.peopledatalabs.helper import collect_errors
 from parma_mining.peopledatalabs.model import (
     CompaniesRequest,
+    CrawlingFinishedInputModel,
     DiscoveryModel,
+    ErrorInfoModel,
     ResponseModel,
 )
 from parma_mining.peopledatalabs.normalization_map import PdlNormalizationMap
@@ -49,14 +53,14 @@ def root():
 
 
 @app.get("/initialize", status_code=status.HTTP_200_OK)
-def initialize(source_id: int) -> str:
+def initialize(source_id: int, token=Depends(authenticate)) -> str:
     """Initialization endpoint for the API."""
     # init frequency
     time = "monthly"
     normalization_map = normalization.get_normalization_map()
     # register the measurement to analytics
     analytics_client.register_measurements(
-        normalization_map, source_module_id=source_id
+        token, normalization_map, source_module_id=source_id
     )
 
     # set and return results
@@ -70,27 +74,46 @@ def initialize(source_id: int) -> str:
     "/companies",
     status_code=status.HTTP_200_OK,
 )
-def get_organization_details(companies: CompaniesRequest, token=Depends(authenticate)):
+def get_organization_details(body: CompaniesRequest, token=Depends(authenticate)):
     """API Endpoint for the organization details according to the company domains.
 
     Possible types : "name" and "website"
     """
+    errors: dict[str, ErrorInfoModel] = {}
     pdl_client = PdlClient(api_key, api_version, base_url)
-    for company_id, company_data in companies.companies.items():
+    for company_id, company_data in body.companies.items():
         for data_type, handles in company_data.items():
             for handle in handles:
-                org_details = pdl_client.get_organization_details(handle, data_type)
+                try:
+                    org_details = pdl_client.get_organization_details(handle, data_type)
+                except CrawlingError as e:
+                    logger.error(
+                        f"Can't fetch company details from People Data Labs. Error: {e}"
+                    )
+                    collect_errors(company_id, errors, e)
+                    continue
+
                 data = ResponseModel(
                     source_name="peopledatalabs",
                     company_id=company_id,
                     raw_data=org_details,
                 )
                 try:
-                    analytics_client.feed_raw_data(data)
-                except Exception:
-                    raise Exception("Can't send crawling data to the Analytics.")
+                    analytics_client.feed_raw_data(token, data)
+                except AnalyticsError as e:
+                    logger.error(
+                        f"Can't send crawling data to the Analytics. Error: {e}"
+                    )
+                    collect_errors(company_id, errors, e)
 
-    return org_details
+    return analytics_client.crawling_finished(
+        token,
+        json.loads(
+            CrawlingFinishedInputModel(
+                task_id=body.task_id, errors=errors
+            ).model_dump_json()
+        ),
+    )
 
 
 @app.get(
