@@ -78,6 +78,7 @@ class OrganizationModel(BaseModel):
 class CompaniesRequest(BaseModel):
     """Base model for the companies request."""
 
+    task_id: int
     companies: dict[str, dict[str, list[str]]]
 
 
@@ -94,3 +95,17 @@ class DiscoveryModel(BaseModel):
 
     name: str | None
     handle: str | None
+
+
+class ErrorInfoModel(BaseModel):
+    """Error info for the crawling_finished endpoint."""
+
+    error_type: str
+    error_description: str | None
+
+
+class CrawlingFinishedInputModel(BaseModel):
+    """Internal base model for the crawling_finished endpoints."""
+
+    task_id: int
+    errors: dict[str, ErrorInfoModel] | None = None

@@ -6,6 +6,7 @@ import urllib.parse
 import httpx
 from dotenv import load_dotenv
 
+from parma_mining.mining_common.exceptions import AnalyticsError
 from parma_mining.peopledatalabs.model import ResponseModel
 
 
@@ -18,6 +19,7 @@ class AnalyticsClient:
 
     measurement_url = urllib.parse.urljoin(analytics_base, "/source-measurement")
     feed_raw_url = urllib.parse.urljoin(analytics_base, "/feed-raw-data")
+    crawling_finished_url = urllib.parse.urljoin(analytics_base, "/crawling-finished")
 
     def send_post_request(self, api_endpoint, data):
         """POST method for the Analytics API's."""
@@ -30,7 +32,7 @@ class AnalyticsClient:
         if response.status_code in [200, 201]:
             return response.json()
         else:
-            raise Exception(
+            raise AnalyticsError(
                 f"API request failed with status code {response.status_code},"
                 f"response: {response.text}"
             )
@@ -78,3 +80,7 @@ class AnalyticsClient:
         }
 
         return self.send_post_request(self.feed_raw_url, data)
+
+    def crawling_finished(self, data):
+        """Notify crawling is finished to the analytics."""
+        return self.send_post_request(self.crawling_finished_url, data)
