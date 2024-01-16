@@ -1,6 +1,7 @@
 import logging
 from unittest.mock import MagicMock
 
+import httpx
 import pytest
 from fastapi.testclient import TestClient
 
@@ -26,10 +27,7 @@ logger = logging.getLogger(__name__)
 
 @pytest.fixture
 def mock_pdl_client(mocker) -> MagicMock:
-    mock = mocker.patch(
-        "parma_mining.peopledatalabs.api.main.PdlClient.get_organization_details"
-    )
-    mock.return_value = {
+    test_data = {
         "status": 200,
         "name": "test",
         "display_name": "test",
@@ -70,7 +68,12 @@ def mock_pdl_client(mocker) -> MagicMock:
         "affiliated_profiles": [],
         "likelihood": 5,
     }
-    return mock
+    mock_get = mocker.patch("parma_mining.peopledatalabs.api.main.PdlClient.get")
+    mock_get.return_value = httpx.Response(
+        request=httpx.Request("GET", "test"), json=test_data, status_code=200
+    )
+
+    return mock_get
 
 
 @pytest.fixture
@@ -82,17 +85,24 @@ def mock_analytics_client(mocker) -> MagicMock:
     mock = mocker.patch(
         "parma_mining.peopledatalabs.api.main.AnalyticsClient.crawling_finished"
     )
+    mock.return_value = {}
     # No return value needed, but you can add side effects or exceptions if necessary
     return mock
 
 
-def test_get_organization_details(
+def test_companies_success(
     client: TestClient, mock_pdl_client: MagicMock, mock_analytics_client: MagicMock
 ):
-    payload = {"task_id": 123, "companies": {"example_id": {"name": ["google"]}}}
+    payload = {
+        "task_id": 123,
+        "companies": {
+            "Example_id1": {"name": ["langfuse"]},
+            "Example_id2": {"name": ["personio"]},
+        },
+    }
     headers = {"Authorization": "Bearer test"}
     response = client.post("/companies", json=payload, headers=headers)
 
     mock_analytics_client.assert_called()
-
+    mock_pdl_client.assert_called()
     assert response.status_code == HTTP_200
