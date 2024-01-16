@@ -21,7 +21,7 @@ from parma_mining.peopledatalabs.model import (
 )
 from parma_mining.peopledatalabs.normalization_map import PdlNormalizationMap
 
-env = os.getenv("env", "local")
+env = os.getenv("DEPLOYMENT_ENV", "local")
 
 if env == "prod":
     logging.basicConfig(level=logging.INFO)
