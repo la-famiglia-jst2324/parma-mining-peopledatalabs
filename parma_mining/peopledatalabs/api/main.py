@@ -128,7 +128,9 @@ def get_organization_details(body: CompaniesRequest, token=Depends(authenticate)
     response_model=FinalDiscoveryResponse,
     status_code=status.HTTP_200_OK,
 )
-def search_organizations(request: list[DiscoveryRequest]):
+def search_organizations(
+    request: list[DiscoveryRequest], token: str = Depends(authenticate)
+):
     """Discovery endpoint for the API."""
     if not request:
         msg = "Request body cannot be empty for discovery"
