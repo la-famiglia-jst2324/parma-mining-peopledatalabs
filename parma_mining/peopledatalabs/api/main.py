@@ -3,11 +3,16 @@
 import json
 import logging
 import os
+from datetime import datetime, timedelta
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, status
 
-from parma_mining.mining_common.exceptions import AnalyticsError, CrawlingError
+from parma_mining.mining_common.exceptions import (
+    AnalyticsError,
+    ClientInvalidBodyError,
+    CrawlingError,
+)
 from parma_mining.peopledatalabs.analytics_client import AnalyticsClient
 from parma_mining.peopledatalabs.api.dependencies.auth import authenticate
 from parma_mining.peopledatalabs.client import PdlClient
@@ -15,8 +20,10 @@ from parma_mining.peopledatalabs.helper import collect_errors
 from parma_mining.peopledatalabs.model import (
     CompaniesRequest,
     CrawlingFinishedInputModel,
-    DiscoveryModel,
+    DiscoveryRequest,
+    DiscoveryResponse,
     ErrorInfoModel,
+    FinalDiscoveryResponse,
     ResponseModel,
 )
 from parma_mining.peopledatalabs.normalization_map import PdlNormalizationMap
@@ -116,14 +123,31 @@ def get_organization_details(body: CompaniesRequest, token=Depends(authenticate)
     )
 
 
-@app.get(
+@app.post(
     "/discover",
-    response_model=list[DiscoveryModel],
+    response_model=FinalDiscoveryResponse,
     status_code=status.HTTP_200_OK,
 )
-def search_organizations(query: str) -> list[DiscoveryModel]:
+def search_organizations(
+    request: list[DiscoveryRequest], token: str = Depends(authenticate)
+):
     """Discovery endpoint for the API."""
-    # Return same name only to agree with the common interface among data sources
-    # There is no discover for PDL
-    result = [DiscoveryModel.model_validate({"name": query, "handle": query})]
-    return result
+    if not request:
+        msg = "Request body cannot be empty for discovery"
+        logger.error(msg)
+        raise ClientInvalidBodyError(msg)
+
+    response_data = {}
+    for company in request:
+        logger.debug(
+            f"Discovering with name: {company.name} for company_id {company.company_id}"
+        )
+        # Return same name only to agree with the common interface among data sources
+        # There is no discover for PDL
+        response = DiscoveryResponse(handles=[company.name])
+        response_data[company.company_id] = response
+
+    current_date = datetime.now()
+    valid_until = current_date + timedelta(days=180)
+
+    return FinalDiscoveryResponse(identifiers=response_data, validity=valid_until)

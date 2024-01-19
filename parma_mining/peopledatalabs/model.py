@@ -1,4 +1,5 @@
 """Pydantic models for the Parma Mining API."""
+from datetime import datetime
 from typing import Any
 
 from pydantic import BaseModel
@@ -90,11 +91,24 @@ class ResponseModel(BaseModel):
     raw_data: OrganizationModel
 
 
-class DiscoveryModel(BaseModel):
-    """Base model for the discovery model."""
+class DiscoveryRequest(BaseModel):
+    """Request model for the discovery endpoint."""
 
-    name: str | None
-    handle: str | None
+    company_id: str
+    name: str
+
+
+class DiscoveryResponse(BaseModel):
+    """Define the output model for the discovery endpoint."""
+
+    handles: list[str] = []
+
+
+class FinalDiscoveryResponse(BaseModel):
+    """Define the final discovery response model."""
+
+    identifiers: dict[str, DiscoveryResponse]
+    validity: datetime
 
 
 class ErrorInfoModel(BaseModel):
