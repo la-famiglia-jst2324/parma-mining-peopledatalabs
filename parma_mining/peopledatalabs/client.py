@@ -29,7 +29,9 @@ class PdlClient:
             "x-api-key": self.api_key,
         }
         full_path = urljoin(self.base_url, self.api_version + path)
-        return httpx.request("GET", url=full_path, headers=headers, params=query)
+        return httpx.request(
+            "GET", url=full_path, headers=headers, params=query, timeout=30
+        )
 
     def get_organization_details(
         self, org_identifier: str, identifier_type: str
