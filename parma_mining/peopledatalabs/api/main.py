@@ -144,7 +144,7 @@ def search_organizations(
         )
         # Return same name only to agree with the common interface among data sources
         # There is no discover for PDL
-        response = DiscoveryResponse(handles=[company.name])
+        response = DiscoveryResponse(name=[company.name])
         response_data[company.company_id] = response
 
     current_date = datetime.now()
